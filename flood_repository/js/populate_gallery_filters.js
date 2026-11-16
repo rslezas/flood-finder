@@ -28,30 +28,17 @@ function populateEventFilter() {
     const previousSelection = select.value;
 
     const options = galleryEvents
-    .map(event => ({
-        id: String(event.event_id || "").trim(),
-        name: String(event.event_name || event.name || "").trim(),
-        date: String(event.datetime || "").trim()
-    }))
-    .filter(event =>
-        event.id &&
-        event.id !== "all" &&
-        event.name
-    )
-    .sort((a, b) => {
-        const dateA = Date.parse(a.date);
-        const dateB = Date.parse(b.date);
+        .map(event => ({
+            id: String(event.event_id || "").trim(),
+            name: String(event.event_name || event.name || "").trim()
+        }))
+        .filter(event =>
+            event.id &&
+            !["all"].includes(event.id) &&
+            event.name
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-        const validA = Number.isFinite(dateA);
-        const validB = Number.isFinite(dateB);
-
-        if (validA && validB) return dateB - dateA;
-        if (validA) return -1;
-        if (validB) return 1;
-
-        return a.name.localeCompare(b.name);
-    });
-    
     select.replaceChildren(
         new Option("All Events", "all"),
     );
@@ -75,6 +62,6 @@ function populateGalleryFilters(galleryObservations) {
         ],
         "All Evidence Types"
     );
-    
+
     populateEventFilter();
 }
